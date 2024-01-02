@@ -23,8 +23,6 @@ func GetUsers(rw http.ResponseWriter, r *http.Request) {
 	//transformo el objeto a JSON
 	output, _ := json.Marshal(users) //devuelve dos valores, un valor tipo byte y un error
 	fmt.Fprintln(rw, string(output))
-
-
 }
 
 func GetUser(rw http.ResponseWriter, r *http.Request) {
@@ -46,7 +44,22 @@ func GetUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUser(rw http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(rw, "Create User")
+	rw.Header().Set("Content-Type", "application/json") 
+
+	//obtengo TODO el registro
+	user := models.User{}
+	decoder := json.NewDecoder(r.Body) //decodifico el json a un objeto
+	if err := decoder.Decode(&user); err != nil {
+		fmt.Fprintln(rw, http.StatusUnprocessableEntity)
+		
+	} else {
+		db.Connect()
+		user.Save()
+		db.Close()
+	}
+
+	output, _ := json.Marshal(user) //convierto el objeto a json
+	fmt.Fprintln(rw, string(output))
 }
 
 func UpdateUser(rw http.ResponseWriter, r *http.Request) {
