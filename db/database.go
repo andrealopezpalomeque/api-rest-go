@@ -69,7 +69,11 @@ func TruncateTable(tableName string){
 
 //polimosfismo de Exec
 func Exec(query string, args ...interface{}) (sql.Result, error){
+	//conexion a la base de datos
+	Connect()
 	result, err := db.Exec(query, args...)
+	//cerrar la conexion
+	Close()
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
@@ -78,7 +82,9 @@ func Exec(query string, args ...interface{}) (sql.Result, error){
 
 //polimosfismo de Query
 func Query(query string, args ...interface{}) (*sql.Rows, error){
+	Connect()
 	rows, err := db.Query(query, args...)
+	Close()
 	if err != nil {
 		fmt.Println("Error:", err)
 	}

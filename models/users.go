@@ -53,10 +53,10 @@ func(user *User) insert(){
 
 
 //listar todos los usuarios
-func ListUsers() Users{
+func ListUsers() (Users, error){
 	sql := "SELECT id, username, password, email FROM users"
 	users := Users{}
-	rows, _ := db.Query(sql) 
+	rows, err := db.Query(sql) 
 
 	//recorro el rows para obtener cada registro
 	for rows.Next(){
@@ -65,22 +65,24 @@ func ListUsers() Users{
 		users = append(users, user)
 	}
 
-	return users
+	return users, err
 }
 
 
 //obtener un registro por id
-func GetUser(id int64) *User{
+func GetUser(id int64) (*User, error){
 	user := NewUser("", "", "")
 	sql := "SELECT id, username, password, email FROM users WHERE id=?"
-	rows, _ := db.Query(sql, id)
+	if rows, err := db.Query(sql, id); err != nil {
+		return nil, err
+	} else {
 
 	for rows.Next(){
 		rows.Scan(&user.Id, &user.Username, &user.Password, &user.Email)
 	}
 
-	return user
-
+	return user, nil
+	}
 }
 
 //actualizar un registro
